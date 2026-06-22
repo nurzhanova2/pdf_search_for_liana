@@ -16,8 +16,8 @@ xcode-select --install
 2. Скачайте проект и перейдите в его папку:
 
 ```bash
-git clone https://github.com/nurzhanova2/pdf_search_for_liana-.git
-cd pdf_search_for_liana-
+git clone https://github.com/nurzhanova2/pdf_search_for_liana.git
+cd pdf_search_for_liana
 ```
 
 3. Положите ZIP-архив с PDF в папку проекта и создайте базу:
