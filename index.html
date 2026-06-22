@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Поиск по PDF</title>
+  <style>
+    :root { font-family: system-ui, sans-serif; color: #172033; background: #f4f6fa; }
+    body { max-width: 900px; margin: 0 auto; padding: 48px 20px; }
+    h1 { margin-bottom: 8px; }
+    .hint { color: #61708a; margin-top: 0; }
+    form { display: flex; gap: 10px; margin: 28px 0; }
+    input { flex: 1; font: inherit; padding: 13px 16px; border: 1px solid #c9d1df; border-radius: 9px; }
+    button { font: inherit; font-weight: 650; color: white; background: #2457d6; border: 0; border-radius: 9px; padding: 0 22px; cursor: pointer; }
+    button:disabled { background: #9ca8bd; cursor: default; }
+    .summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+    #download { display: none; color: white; background: #16734a; border-radius: 8px; padding: 10px 15px; text-decoration: none; font-weight: 650; }
+    .pagination { display: none; align-items: center; justify-content: center; gap: 14px; margin: 24px 0; }
+    .pagination button { padding: 10px 16px; }
+    #page-info { min-width: 130px; text-align: center; color: #61708a; }
+    .result { background: white; border: 1px solid #dfe4ec; border-radius: 10px; padding: 16px 18px; margin: 12px 0; }
+    .meta { color: #2457d6; font-size: 14px; font-weight: 650; text-decoration: none; }
+    .sentence { line-height: 1.55; margin: 9px 0 0; }
+    mark { background: #ffe47a; padding: 0 2px; }
+  </style>
+</head>
+<body>
+  <h1>Поиск по PDF-документам</h1>
+  <p class="hint">Введите слово или фразу. Результат покажет предложение, документ и страницу.</p>
+  <form id="form"><input id="query" autofocus required placeholder="Например: кибербезопасность"><button>Найти</button></form>
+  <div class="summary"><div id="status"></div><a id="download" download>Скачать предложения CSV</a></div>
+  <main id="results"></main>
+  <nav id="pagination" class="pagination"><button id="previous" type="button">Назад</button><span id="page-info"></span><button id="next" type="button">Вперед</button></nav>
+  <script>
+    const esc = value => value.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    let currentQuery = '', currentPage = 1, totalPages = 1;
+    async function loadPage(page) {
+      const q = currentQuery;
+      const status = document.querySelector('#status'), output = document.querySelector('#results');
+      const download = document.querySelector('#download');
+      const pagination = document.querySelector('#pagination');
+      download.style.display = 'none';
+      status.textContent = 'Поиск...'; output.innerHTML = '';
+      const data = await fetch('/api/search?q=' + encodeURIComponent(q) + '&page=' + page).then(r => r.json());
+      currentPage = data.page;
+      totalPages = Math.max(1, Math.ceil(data.total / data.per_page));
+      status.textContent = `Найдено предложений: ${data.total}`;
+      if (data.total) {
+        download.href = '/api/export?q=' + encodeURIComponent(q);
+        download.style.display = 'inline-block';
+      }
+      const rx = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+      output.innerHTML = data.results.map(r => `<article class="result"><a class="meta" target="_blank" href="/pdf/${encodeURIComponent(r.document)}#page=${r.page}">${esc(r.document)} · стр. ${r.page}</a><p class="sentence">${esc(r.sentence).replace(rx, '<mark>$1</mark>')}</p></article>`).join('');
+      pagination.style.display = totalPages > 1 ? 'flex' : 'none';
+      document.querySelector('#page-info').textContent = `Страница ${currentPage} из ${totalPages}`;
+      document.querySelector('#previous').disabled = currentPage === 1;
+      document.querySelector('#next').disabled = currentPage === totalPages;
+      if (page > 1) window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+    document.querySelector('#form').addEventListener('submit', event => {
+      event.preventDefault();
+      currentQuery = document.querySelector('#query').value.trim();
+      loadPage(1);
+    });
+    document.querySelector('#previous').addEventListener('click', () => loadPage(currentPage - 1));
+    document.querySelector('#next').addEventListener('click', () => loadPage(currentPage + 1));
+  </script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+.DS_Store
+.clang-cache/
+.pycache/
+__pycache__/
+extract_pdf
+pdf_search.db
+pdfs/
