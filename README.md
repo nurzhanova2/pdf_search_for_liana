@@ -1,27 +1,45 @@
-# pdf_search_for_liana
+# PDF Search for Liana
 
-The SQLite database contains the text of every PDF page. Search results show each
-matching sentence, its document, and page number.
+Программа ищет слово или фразу в PDF-документах и показывает найденные
+предложения, название документа и номер страницы.
 
-Build or rebuild the database:
+## Запуск с нуля
 
-```bash
-python3 pdf_search/build_index.py drive-download-20260622T060346Z-3-001.zip
-```
+Требуется macOS и Python 3.
 
-Search for a word or phrase (the search is case-insensitive):
+1. Установите системные инструменты, если они еще не установлены:
 
 ```bash
-python3 pdf_search/search.py cybersecurity
-python3 pdf_search/search.py "personal data"
+xcode-select --install
 ```
 
-Or start the browser interface:
+2. Скачайте проект и перейдите в его папку:
 
 ```bash
-python3 pdf_search/server.py
+git clone https://github.com/nurzhanova2/pdf_search_for_liana-.git
+cd pdf_search_for_liana-
 ```
 
-Then open <http://127.0.0.1:8000>. Click a result heading to open the source PDF
-at the matching page. The CSV download button exports every matching sentence
-with its document and page number.
+3. Положите ZIP-архив с PDF в папку проекта и создайте базу:
+
+```bash
+python3 build_index.py drive-download-20260622T060346Z-3-001.zip
+```
+
+4. Запустите сайт:
+
+```bash
+python3 server.py
+```
+
+5. Откройте в браузере <http://127.0.0.1:8000>.
+
+Введите слово или фразу. На странице выводится по 20 результатов. Кнопка
+скачивания сохраняет все найденные предложения в CSV. Для остановки сервера
+нажмите `Control+C` в терминале.
+
+Поиск без сайта:
+
+```bash
+python3 search.py "personal data"
+```
