@@ -1,4 +1,4 @@
-# pdf_search_for_liana-
+# pdf_search_for_liana
 
 The SQLite database contains the text of every PDF page. Search results show each
 matching sentence, its document, and page number.
