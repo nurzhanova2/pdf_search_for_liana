@@ -3,36 +3,43 @@
 Программа ищет слово или фразу в PDF-документах и показывает найденные
 предложения, название документа и номер страницы.
 
-## Запуск с нуля
+## Windows
 
-Требуется macOS и Python 3.
+1. Установите [Python 3](https://www.python.org/downloads/) и
+[Git for Windows](https://git-scm.com/download/win). При установке Python
+отметьте `Add Python to PATH`.
 
-1. Установите системные инструменты, если они еще не установлены:
+2. Откройте PowerShell и выполните:
 
-```bash
-xcode-select --install
-```
-
-2. Скачайте проект и перейдите в его папку:
-
-```bash
+```powershell
 git clone https://github.com/nurzhanova2/pdf_search_for_liana.git
 cd pdf_search_for_liana
+py -m pip install -r requirements.txt
 ```
 
 3. Положите ZIP-архив с PDF в папку проекта и создайте базу:
 
-```bash
-python3 build_index.py drive-download-20260622T060346Z-3-001.zip
+```powershell
+py build_index.py drive-download-20260622T060346Z-3-001.zip
 ```
 
 4. Запустите сайт:
 
-```bash
-python3 server.py
+```powershell
+py server.py
 ```
 
-5. Откройте в браузере <http://127.0.0.1:8000>.
+5. Откройте <http://127.0.0.1:8000> в браузере.
+
+## macOS или Linux
+
+```bash
+git clone https://github.com/nurzhanova2/pdf_search_for_liana.git
+cd pdf_search_for_liana
+python3 -m pip install -r requirements.txt
+python3 build_index.py drive-download-20260622T060346Z-3-001.zip
+python3 server.py
+```
 
 Введите слово или фразу. На странице выводится по 20 результатов. Кнопка
 скачивания сохраняет все найденные предложения в CSV. Для остановки сервера
@@ -40,6 +47,6 @@ python3 server.py
 
 Поиск без сайта:
 
-```bash
-python3 search.py "personal data"
+```powershell
+py search.py "personal data"
 ```

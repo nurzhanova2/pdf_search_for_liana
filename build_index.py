@@ -1,35 +1,17 @@
 #!/usr/bin/env python3
 import argparse
-import base64
 import re
 import sqlite3
-import subprocess
 import sys
 import zipfile
 from pathlib import Path
 
+from pypdf import PdfReader
+from pypdf.errors import PdfReadError
+
 HERE = Path(__file__).resolve().parent
 PDF_DIR = HERE / "pdfs"
 DB_PATH = HERE / "pdf_search.db"
-EXTRACTOR = HERE / "extract_pdf"
-
-
-def compile_extractor():
-    source = HERE / "extract_pdf.m"
-    subprocess.run(
-        [
-            "clang",
-            "-fobjc-arc",
-            "-framework",
-            "Foundation",
-            "-framework",
-            "PDFKit",
-            str(source),
-            "-o",
-            str(EXTRACTOR),
-        ],
-        check=True,
-    )
 
 
 def extract_archive(archive):
@@ -46,12 +28,9 @@ def extract_archive(archive):
 
 
 def pages_from_pdf(path):
-    result = subprocess.run(
-        [str(EXTRACTOR), str(path)], capture_output=True, text=True, check=True
-    )
-    for line in result.stdout.splitlines():
-        page, encoded = line.split("\t", 1)
-        yield int(page), base64.b64decode(encoded).decode("utf-8")
+    reader = PdfReader(path)
+    for page_number, page in enumerate(reader.pages, 1):
+        yield page_number, page.extract_text() or ""
 
 
 def normalize(text):
@@ -69,8 +48,6 @@ def main():
 
     print("Extracting PDFs...")
     extract_archive(args.archive)
-    print("Compiling PDF text extractor...")
-    compile_extractor()
 
     pdfs = sorted(PDF_DIR.glob("*.pdf"), key=lambda p: p.name.casefold())
     connection = sqlite3.connect(DB_PATH)
@@ -99,7 +76,7 @@ def main():
                 "INSERT INTO pages(document, page, text) VALUES (?, ?, ?)", rows
             )
             connection.commit()
-        except (subprocess.CalledProcessError, ValueError) as exc:
+        except (PdfReadError, OSError, ValueError) as exc:
             print(f"  ERROR: {exc}", file=sys.stderr)
 
     total_pages, total_chars = connection.execute(

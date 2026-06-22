@@ -1,6 +1,7 @@
 .DS_Store
 .clang-cache/
 .pycache/
+.venv/
 __pycache__/
 extract_pdf
 pdf_search.db
