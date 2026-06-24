@@ -6,19 +6,25 @@
   <title>Поиск по PDF</title>
   <style>
     :root { font-family: system-ui, sans-serif; color: #172033; background: #f4f6fa; }
-    body { max-width: 900px; margin: 0 auto; padding: 48px 20px; }
+    body { max-width: 1100px; margin: 0 auto; padding: 48px 20px; }
     h1 { margin-bottom: 8px; }
     .hint { color: #61708a; margin-top: 0; }
     form { display: flex; gap: 10px; margin: 28px 0; }
+    select { font: inherit; padding: 12px 14px; border: 1px solid #c9d1df; border-radius: 9px; background: white; }
     input { flex: 1; font: inherit; padding: 13px 16px; border: 1px solid #c9d1df; border-radius: 9px; }
     button { font: inherit; font-weight: 650; color: white; background: #2457d6; border: 0; border-radius: 9px; padding: 0 22px; cursor: pointer; }
     button:disabled { background: #9ca8bd; cursor: default; }
     .summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
-    #download { display: none; color: white; background: #16734a; border-radius: 8px; padding: 10px 15px; text-decoration: none; font-weight: 650; }
+    #download, #coding-download { display: none; color: white; background: #16734a; border-radius: 8px; padding: 10px 15px; text-decoration: none; font-weight: 650; }
     .pagination { display: none; align-items: center; justify-content: center; gap: 14px; margin: 24px 0; }
     .pagination button { padding: 10px 16px; }
     #page-info { min-width: 130px; text-align: center; color: #61708a; }
-    .result { background: white; border: 1px solid #dfe4ec; border-radius: 10px; padding: 16px 18px; margin: 12px 0; }
+    .panel, .result { background: white; border: 1px solid #dfe4ec; border-radius: 10px; padding: 16px 18px; margin: 12px 0; }
+    .panel { margin-top: 36px; }
+    .controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 16px 0; }
+    .claim { border-top: 1px solid #edf0f5; padding: 12px 0; }
+    .claim:first-child { border-top: 0; }
+    .tag { display: inline-block; border-radius: 999px; background: #eef3ff; color: #2457d6; padding: 3px 9px; font-size: 12px; font-weight: 700; }
     .meta { color: #2457d6; font-size: 14px; font-weight: 650; text-decoration: none; }
     .sentence { line-height: 1.55; margin: 9px 0 0; }
     mark { background: #ffe47a; padding: 0 2px; }
@@ -31,6 +37,20 @@
   <div class="summary"><div id="status"></div><a id="download" download>Скачать предложения CSV</a></div>
   <main id="results"></main>
   <nav id="pagination" class="pagination"><button id="previous" type="button">Назад</button><span id="page-info"></span><button id="next" type="button">Вперед</button></nav>
+
+  <section class="panel">
+    <h2>Qualitative coding</h2>
+    <p class="hint">Evidence matrix для deductive и inductive кодов: фрагмент, документ, страница, код, construct и проверка evidence rule.</p>
+    <div id="coding-status"></div>
+    <div id="claims"></div>
+    <div class="controls">
+      <select id="construct-filter"><option value="">Все constructs</option></select>
+      <select id="code-filter"><option value="">Все codes</option></select>
+      <a id="coding-download" download>Скачать coded evidence CSV</a>
+    </div>
+    <main id="coded-results"></main>
+    <nav id="coding-pagination" class="pagination"><button id="coding-previous" type="button">Назад</button><span id="coding-page-info"></span><button id="coding-next" type="button">Вперед</button></nav>
+  </section>
   <script>
     const esc = value => value.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     let currentQuery = '', currentPage = 1, totalPages = 1;
@@ -64,6 +84,64 @@
     });
     document.querySelector('#previous').addEventListener('click', () => loadPage(currentPage - 1));
     document.querySelector('#next').addEventListener('click', () => loadPage(currentPage + 1));
+
+    const codeLabels = new Map();
+    let codingPage = 1, codingTotalPages = 1;
+
+    async function loadCodingSummary() {
+      const data = await fetch('/api/coding/summary').then(r => r.json());
+      const status = document.querySelector('#coding-status');
+      const claims = document.querySelector('#claims');
+      const constructFilter = document.querySelector('#construct-filter');
+      if (!data.ready) {
+        status.textContent = 'Сначала запустите: python3 qualitative_coding.py';
+        return;
+      }
+      status.textContent = 'Construct-level claims и evidence rule загружены.';
+      claims.innerHTML = data.claims.map(c => `<div class="claim"><span class="tag">${esc(c.supported_for_explanation)}</span> <strong>${esc(c.construct)}</strong><br>${esc(c.claim)}<br><small>Evidence: ${c.evidence_count}; primary evidence: ${c.primary_evidence_count}; primary documents: ${c.primary_documents}; primary source types: ${esc(c.primary_source_types)}</small></div>`).join('');
+      constructFilter.innerHTML += data.claims.map(c => `<option value="${esc(c.construct)}">${esc(c.construct)}</option>`).join('');
+      await loadCodedEvidence(1);
+    }
+
+    async function loadCodedEvidence(page) {
+      const construct = document.querySelector('#construct-filter').value;
+      const code = document.querySelector('#code-filter').value;
+      const params = new URLSearchParams({page});
+      if (construct) params.set('construct', construct);
+      if (code) params.set('code', code);
+      const data = await fetch('/api/coding/evidence?' + params.toString()).then(r => r.json());
+      const output = document.querySelector('#coded-results');
+      const download = document.querySelector('#coding-download');
+      const pagination = document.querySelector('#coding-pagination');
+      if (!data.ready) return;
+      codingPage = data.page;
+      codingTotalPages = Math.max(1, Math.ceil(data.total / data.per_page));
+      output.innerHTML = data.results.map(r => {
+        codeLabels.set(r.code_id, r.code_label);
+        return `<article class="result"><a class="meta" target="_blank" href="/pdf/${encodeURIComponent(r.document)}#page=${r.page}">${esc(r.document)} · стр. ${r.page}</a><p><span class="tag">${esc(r.construct)}</span> <strong>${esc(r.code_id)}</strong> · ${esc(r.code_label)} · ${esc(r.source_type)} · ${esc(r.evidence_role)}</p><p class="sentence">${esc(r.sentence)}</p><small>Matched terms: ${esc(r.matched_terms)}</small></article>`;
+      }).join('');
+      if (data.total === 0) output.innerHTML = '<p class="hint">Нет coded evidence по выбранному фильтру.</p>';
+      const codeFilter = document.querySelector('#code-filter');
+      const selected = codeFilter.value;
+      const options = [...codeLabels.entries()].sort().map(([id, label]) => `<option value="${esc(id)}">${esc(id)} — ${esc(label)}</option>`).join('');
+      codeFilter.innerHTML = '<option value="">Все codes</option>' + options;
+      codeFilter.value = selected;
+      const exportParams = new URLSearchParams();
+      if (construct) exportParams.set('construct', construct);
+      if (code) exportParams.set('code', code);
+      download.href = '/api/coding/export?' + exportParams.toString();
+      download.style.display = 'inline-block';
+      pagination.style.display = codingTotalPages > 1 ? 'flex' : 'none';
+      document.querySelector('#coding-page-info').textContent = `Страница ${codingPage} из ${codingTotalPages}`;
+      document.querySelector('#coding-previous').disabled = codingPage === 1;
+      document.querySelector('#coding-next').disabled = codingPage === codingTotalPages;
+    }
+
+    document.querySelector('#construct-filter').addEventListener('change', () => loadCodedEvidence(1));
+    document.querySelector('#code-filter').addEventListener('change', () => loadCodedEvidence(1));
+    document.querySelector('#coding-previous').addEventListener('click', () => loadCodedEvidence(codingPage - 1));
+    document.querySelector('#coding-next').addEventListener('click', () => loadCodedEvidence(codingPage + 1));
+    loadCodingSummary();
   </script>
 </body>
 </html>

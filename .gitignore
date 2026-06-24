@@ -6,3 +6,4 @@ __pycache__/
 extract_pdf
 pdf_search.db
 pdfs/
+analysis_output/

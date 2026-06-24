@@ -50,3 +50,58 @@ python3 server.py
 ```powershell
 py search.py "personal data"
 ```
+
+## Qualitative coding для исследования
+
+После создания `pdf_search.db` запустите автоматическое первичное кодирование:
+
+```bash
+python3 qualitative_coding.py
+```
+
+На Windows:
+
+```powershell
+py qualitative_coding.py
+```
+
+Скрипт использует `codes.json` и строит traceable workflow:
+
+- `analysis_output/document_inventory.csv` — список документов и тип источника;
+- `analysis_output/evidence_matrix.csv` — фрагмент документа, страница, code, construct, matched terms;
+- `analysis_output/construct_claims.csv` — проверка evidence rule: claim считается supported, если есть минимум 2 независимых документа или разные типы источников;
+- `analysis_output/design_requirements.csv` — перевод evidence-based claims в design requirements для network governance framework.
+
+Типы источников уже размечены в `source_types.json`. Evidence rule считается по `primary_documentary` источникам: `law`, `strategy`, `regulation`, `institutional_protocol`, `government_guidance`, `government_communication`, `institutional_report`. `international_report` и `institutional_interview` используются для triangulation, а `academic_literature`, `news_media`, `expert_commentary`, `interview_transcript` остаются contextual material и не являются единственным основанием для explanatory claims.
+
+В веб-интерфейсе блок `Qualitative coding` показывает construct-level claims, coded evidence по 20 строк на страницу и дает скачать `coded_evidence.csv` с выбранными фильтрами.
+
+
+## Итоги coded analysis
+
+После последнего запуска `qualitative_coding.py` получены такие результаты:
+
+- всего документов в базе: 40;
+- primary documentary sources: 10;
+- triangulation sources: 5;
+- contextual literature sources: 25;
+- всего coded evidence rows: 15,206;
+- primary documentary coded rows: 5,315;
+- triangulation coded rows: 2,404;
+- contextual coded rows: 7,487.
+
+Construct-level claims поддержаны primary documentary evidence:
+
+| Construct | Total excerpts | Primary excerpts | Primary documents |
+| --- | ---: | ---: | ---: |
+| CSG outcomes | 4,596 | 1,314 | 10 |
+| Dynamic capabilities | 3,409 | 1,339 | 10 |
+| Institutional fragmentation | 2,772 | 704 | 10 |
+| Coordination mechanisms | 1,977 | 1,070 | 9 |
+| Cooperation incentives and constraints | 1,732 | 740 | 9 |
+| Governance failure modes | 720 | 148 | 9 |
+
+Главный вывод для conclusion: coded evidence показывает, что reactive cybersecurity governance в Казахстане связано не только с технологиями или финансированием, а с повторяющимися governance patterns: institutional fragmentation, cooperation constraints, uneven coordination mechanisms, role ambiguity, weak escalation paths и слабым follow-through.
+
+Важно: автоматическое кодирование — это первый проход для evidence management. Для финального текста нужно вручную проверить релевантные excerpts, особенно inductive codes и single-source claims.
+

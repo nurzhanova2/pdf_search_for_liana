@@ -1,0 +1,122 @@
+[
+  {
+    "code_id": "IF_ROLE_AMBIGUITY",
+    "label": "Role ambiguity / overlapping mandates",
+    "code_type": "deductive",
+    "construct": "institutional_fragmentation",
+    "description": "Unclear, duplicated, or competing institutional responsibilities.",
+    "keywords": ["mandate", "authority", "responsibility", "responsibilities", "competence", "coordination body", "authorized body", "role", "roles", "обязан", "полномоч", "компетенц", "ответствен", "уполномоч", "функци"]
+  },
+  {
+    "code_id": "IF_INCONSISTENT_RULES",
+    "label": "Procedural or policy inconsistency",
+    "code_type": "inductive",
+    "construct": "institutional_fragmentation",
+    "description": "Different documents define procedures, standards, or obligations unevenly.",
+    "keywords": ["procedure", "standard", "regulation", "requirements", "in accordance", "inconsisten", "порядок", "стандарт", "регламент", "требован", "несоответ", "согласован"]
+  },
+  {
+    "code_id": "CI_INCENTIVES",
+    "label": "Cooperation incentives",
+    "code_type": "deductive",
+    "construct": "cooperation_incentives_constraints",
+    "description": "Formal reasons or benefits that encourage interagency cooperation.",
+    "keywords": ["cooperation", "collaboration", "partnership", "joint", "interagency", "interdepartmental", "взаимодейств", "сотруднич", "совмест", "межведом", "партнер"]
+  },
+  {
+    "code_id": "CI_CONSTRAINTS",
+    "label": "Cooperation constraints",
+    "code_type": "deductive",
+    "construct": "cooperation_incentives_constraints",
+    "description": "Legal, procedural, resource, or organizational limits on cooperation.",
+    "keywords": ["constraint", "limitation", "barrier", "confidential", "personal data", "restriction", "огранич", "барьер", "конфиденц", "персональн", "тайн", "доступ"]
+  },
+  {
+    "code_id": "CM_INFORMATION_SHARING",
+    "label": "Information-sharing mechanism",
+    "code_type": "deductive",
+    "construct": "coordination_mechanisms",
+    "description": "Formal channels, duties, or systems for sharing cybersecurity information.",
+    "keywords": ["information sharing", "exchange of information", "notification", "reporting", "threat intelligence", "data exchange", "обмен информац", "уведомлен", "сообщен", "информирован", "отчет", "данн"]
+  },
+  {
+    "code_id": "CM_INCIDENT_RESPONSE",
+    "label": "Incident response coordination",
+    "code_type": "deductive",
+    "construct": "coordination_mechanisms",
+    "description": "Incident reporting, escalation, response, recovery, and joint execution rules.",
+    "keywords": ["incident", "response", "recovery", "escalation", "playbook", "computer incident", "cyber incident", "инцидент", "реагирован", "восстановлен", "эскалац", "компьютерн"]
+  },
+  {
+    "code_id": "CM_LEAD_AUTHORITY",
+    "label": "Lead authority / coordination center",
+    "code_type": "deductive",
+    "construct": "coordination_mechanisms",
+    "description": "Designation of a lead institution, national center, or coordination authority.",
+    "keywords": ["lead authority", "national center", "coordination center", "single operator", "центр", "координац", "единый оператор", "национальн", "уполномоченный орган"]
+  },
+  {
+    "code_id": "CSG_POLICY_COHERENCE",
+    "label": "Policy coherence",
+    "code_type": "deductive",
+    "construct": "csg_outcomes",
+    "description": "Alignment of strategies, rules, standards, and institutional requirements.",
+    "keywords": ["policy", "strategy", "standard", "alignment", "coherence", "стратег", "политик", "стандарт", "согласован", "един"]
+  },
+  {
+    "code_id": "CSG_IMPLEMENTATION_CAPACITY",
+    "label": "Implementation capacity",
+    "code_type": "deductive",
+    "construct": "csg_outcomes",
+    "description": "Resources, skills, readiness, exercises, or operational capacity to execute cybersecurity duties.",
+    "keywords": ["capacity", "resource", "funding", "training", "exercise", "readiness", "capability", "ресурс", "финанс", "обучен", "учен", "готовност", "кадр", "компетенц"]
+  },
+  {
+    "code_id": "CSG_ACCOUNTABILITY",
+    "label": "Accountability and follow-through",
+    "code_type": "deductive",
+    "construct": "csg_outcomes",
+    "description": "Responsibility, monitoring, remediation, enforcement, reporting, or closure of obligations.",
+    "keywords": ["accountability", "responsibility", "monitoring", "audit", "control", "remediation", "liability", "ответствен", "контроль", "мониторинг", "аудит", "устранен", "исполнен"]
+  },
+  {
+    "code_id": "DC_SENSING",
+    "label": "Sensing",
+    "code_type": "deductive",
+    "construct": "dynamic_capabilities",
+    "description": "Threat detection, monitoring, situational awareness, risk assessment, and data pipelines.",
+    "keywords": ["monitoring", "detection", "threat", "risk assessment", "situational awareness", "vulnerability", "мониторинг", "обнаруж", "угроз", "риск", "уязвим", "осведомлен"]
+  },
+  {
+    "code_id": "DC_SEIZING",
+    "label": "Seizing",
+    "code_type": "deductive",
+    "construct": "dynamic_capabilities",
+    "description": "Turning analysis into coordinated priorities, decisions, funded plans, or enforceable action.",
+    "keywords": ["roadmap", "priority", "implementation plan", "decision", "action plan", "funded", "план", "приоритет", "решен", "мероприят", "реализац", "финансирован"]
+  },
+  {
+    "code_id": "DC_TRANSFORMING",
+    "label": "Transforming",
+    "code_type": "deductive",
+    "construct": "dynamic_capabilities",
+    "description": "Learning loops, post-incident reviews, exercises, updates, and continuous improvement.",
+    "keywords": ["lesson", "review", "feedback", "continuous improvement", "update", "exercise", "обратн", "анализ", "актуализац", "обновлен", "учен", "совершенств"]
+  },
+  {
+    "code_id": "GAP_ESCALATION",
+    "label": "Escalation gap",
+    "code_type": "inductive",
+    "construct": "governance_failure_modes",
+    "description": "Missing or weak escalation ladders, deadlines, or handoff procedures.",
+    "keywords": ["escalation", "deadline", "handoff", "notify within", "immediately", "эскалац", "срок", "незамедл", "передач", "уведом"]
+  },
+  {
+    "code_id": "GAP_GOVERNANCE_FAILURE",
+    "label": "Governance failure mode",
+    "code_type": "inductive",
+    "construct": "governance_failure_modes",
+    "description": "Evidence of weak follow-through, unresolved responsibility, or formal gaps in governance routines.",
+    "keywords": ["failure", "gap", "absence", "lack of", "not defined", "не определ", "отсутств", "недостат", "пробел", "нарушен", "неисполн"]
+  }
+]
